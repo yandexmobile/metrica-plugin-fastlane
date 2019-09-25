@@ -1,0 +1,29 @@
+
+lane :refresh_dsyms do
+  download_dsyms
+  upload_symbols_to_appmetrica(post_api_key: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+  clean_build_artifacts
+end
+
+lane :release_no_bitcode do
+  # Your actions before.
+  gym(
+    workspace: "MyApp.xcworkspace",
+      configuration: "Release",
+      scheme: "MyApp"
+  )
+  upload_symbols_to_appmetrica(post_api_key: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+  # Your actions after.
+end
+
+lane :archive do
+  # Your actions before.
+  gym(
+    workspace: "MyApp.xcworkspace",
+      configuration: "Release",
+      scheme: "MyApp",
+      export_method: "enterprise"
+  )
+  upload_symbols_to_appmetrica(post_api_key: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+  # Your actions after.
+end
