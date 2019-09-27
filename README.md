@@ -13,7 +13,7 @@ fastlane add_plugin appmetrica
 ## About AppMetrica Plugin
 
 Upload dSYM symbolication files to AppMetrica.
-Documentation could be found at [AppMetrica official site](https://appmetrica.yandex.ru/docs/crash/upload-dsym.html)
+Documentation could be found at [AppMetrica official site](https://appmetrica.yandex.ru/docs/crashes/upload-dsym.html)
 
 ## Example
 
