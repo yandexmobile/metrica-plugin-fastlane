@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Upload dSYM symbolication files to AppMetrica'
   spec.homepage      = 'https://github.com/yandexmobile/metrica-plugin-fastlane'
-  spec.license       = 'Proprietary'
+  spec.license       = 'Nonstandard'
 
   spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})

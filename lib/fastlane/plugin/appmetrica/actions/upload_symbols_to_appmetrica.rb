@@ -16,7 +16,11 @@ module Fastlane
           package_output_path = File.absolute_path(params[:package_output_path])
         end
 
-        files = params[:files] || [Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH]] || []
+        files = []
+        files += params[:files] if params[:files]
+        files << Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH] if Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH]
+        files += Actions.lane_context[SharedValues::DSYM_PATHS] if Actions.lane_context[SharedValues::DSYM_PATHS]
+          
         files = files.map do |file|
           self.process_file(file, temp_dir) unless file.nil?
         end
@@ -32,8 +36,10 @@ module Fastlane
 
       def self.process_file(file_path, temp_dir)
         if File.extname(file_path) == ".zip"
-          Actions.sh("unzip -o #{file_path.shellescape} -d #{temp_dir.shellescape} 2>/dev/null")
-          return temp_dir
+          output_path = File.join(temp_dir, SecureRandom.uuid)
+          Dir.mkdir(output_path)
+          Actions.sh("unzip -o #{file_path.shellescape} -d #{output_path.shellescape} 2>/dev/null")
+          return output_path
         end
         return File.absolute_path(file_path)
       end
