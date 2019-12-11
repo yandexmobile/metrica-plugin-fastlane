@@ -54,7 +54,7 @@ module Fastlane
 
         params[:binary_path] = File.expand_path(params[:binary_path])
 
-        cli_version = Gem::Version.new(`#{params[:binary_path]} --version`.strip)
+        cli_version = Gem::Version.new(`#{params[:binary_path].shellescape} --version`.strip)
         unless Gem::Requirement.new(Fastlane::Appmetrica::CLI_VERSION) =~ cli_version
           UI.user_error!("Your 'helper' is outdatedcd, please upgrade to at least version "\
             "#{Fastlane::Appmetrica::CLI_VERSION} and start again!")
