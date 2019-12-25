@@ -20,7 +20,7 @@ module Fastlane
         files += params[:files] if params[:files]
         files << Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH] if Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH]
         files += Actions.lane_context[SharedValues::DSYM_PATHS] if Actions.lane_context[SharedValues::DSYM_PATHS]
-          
+
         files = files.map do |file|
           self.process_file(file, temp_dir) unless file.nil?
         end
@@ -52,9 +52,9 @@ module Fastlane
             "You may specify the location of the binary by using the binary_path option")
         end
 
-        params[:binary_path] = File.expand_path(params[:binary_path])
+        params[:binary_path] = File.expand_path(params[:binary_path]).shellescape
 
-        cli_version = Gem::Version.new(`#{params[:binary_path].shellescape} --version`.strip)
+        cli_version = Gem::Version.new(`#{params[:binary_path]} --version`.strip)
         unless Gem::Requirement.new(Fastlane::Appmetrica::CLI_VERSION) =~ cli_version
           UI.user_error!("Your 'helper' is outdatedcd, please upgrade to at least version "\
             "#{Fastlane::Appmetrica::CLI_VERSION} and start again!")
