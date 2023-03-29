@@ -16,19 +16,16 @@ module Fastlane
           package_output_path = File.absolute_path(params[:package_output_path])
         end
 
-        files = []
-        files += params[:files] if params[:files]
-        files << Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH] if Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH]
-        files += Actions.lane_context[SharedValues::DSYM_PATHS] if Actions.lane_context[SharedValues::DSYM_PATHS]
+        files = Array(params[:files]) +
+                Array(Actions.lane_context[SharedValues::DSYM_OUTPUT_PATH]) +
+                Array(Actions.lane_context[SharedValues::DSYM_PATHS])
 
-        files = files.map do |file|
-          self.process_file(file, temp_dir) unless file.nil?
-        end
+        files = files.compact.map { |file| self.process_file(file, temp_dir) }
 
         cmd = [params[:binary_path], "--post-api-key=#{params[:post_api_key]}"]
         cmd << "--verbose" if params[:verbose]
         cmd << "--package-output-path=#{package_output_path.shellescape}" unless package_output_path.nil?
-        cmd += files unless files.nil?
+        cmd += files unless files.empty?
 
         UI.message("Starting helper")
         Actions.sh(cmd)
@@ -45,7 +42,7 @@ module Fastlane
       end
 
       def self.find_binary(params)
-        params[:binary_path] ||= Dir["./Pods/**/helper"].last
+        params[:binary_path] ||= Dir["./Pods/**/*MobileMetrica/helper"].last
 
         unless params[:binary_path]
           UI.user_error!("Failed to find 'helper' binary. Install YandexMobileMetrica 3.8.0 pod or higher. "\
@@ -56,7 +53,7 @@ module Fastlane
 
         cli_version = Gem::Version.new(`#{params[:binary_path]} --version`.strip)
         unless Gem::Requirement.new(Fastlane::Appmetrica::CLI_VERSION) =~ cli_version
-          UI.user_error!("Your 'helper' is outdatedcd, please upgrade to at least version "\
+          UI.user_error!("Your 'helper' is outdated, please upgrade to at least version "\
             "#{Fastlane::Appmetrica::CLI_VERSION} and start again!")
         end
       end
@@ -97,7 +94,7 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :verbose,
                                        description: "Verbose mode. Displays additional information",
                                        optional: true,
-                                       type: String),
+                                       type: Boolean),
           FastlaneCore::ConfigItem.new(key: :files,
                                        description: "An optional list of dSYM files or directories that "\
                                        "contain these files to upload. If not specified, "\
